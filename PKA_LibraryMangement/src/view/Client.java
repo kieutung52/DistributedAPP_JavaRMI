@@ -3,6 +3,10 @@ package view;
 import model.User;
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -17,6 +21,9 @@ public class Client extends JFrame {
     private UserPanel userPanel;
     private AdminPanel adminPanel;
     private User currentUser;
+    private static final int NOTIFICATION_PORT = 2000; 
+    private Socket notificationSocket;
+    private BufferedReader notificationReader;
 
     public Client() {
         setTitle("Library Management");
@@ -29,6 +36,8 @@ public class Client extends JFrame {
 
             Registry registryBook = LocateRegistry.getRegistry("localhost", 1099);
             bookService = (BookService) registryBook.lookup("BookService");
+
+            startNotificationListener(); 
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,9 +61,52 @@ public class Client extends JFrame {
         setVisible(true);
     }
 
+    private void startNotificationListener() {
+        new Thread(() -> {
+            try {
+                notificationSocket = new Socket("localhost", NOTIFICATION_PORT);
+                notificationReader = new BufferedReader(new InputStreamReader(notificationSocket.getInputStream()));
+                String message;
+                while ((message = notificationReader.readLine()) != null) {
+                    if ("update".equals(message)) {
+                        SwingUtilities.invokeLater(() -> {
+                            
+                            if (currentUser != null) {
+                                if ("admin".equals(currentUser.getRole())) {
+                                    adminPanel.viewAllBooks();
+                                    adminPanel.viewAllRequests();
+                                } else {
+                                    userPanel.viewAllBooks();
+                                    userPanel.updateBorrowRequests();
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Notification connection error: " + e.getMessage());
+            } finally {
+                closeNotificationConnection(); 
+            }
+        }).start();
+    }
+    private void closeNotificationConnection() {
+        try {
+            if (notificationReader != null) {
+                notificationReader.close();
+            }
+            if (notificationSocket != null) {
+                notificationSocket.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error closing notification connection: " + e.getMessage());
+        }
+    }
+
     public void showPanel(String panelName) {
         cardLayout.show(this.getContentPane(), panelName);
     }
+
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -75,7 +127,6 @@ public class Client extends JFrame {
         }
     }
 
-
     public User getCurrentUser() {
         return currentUser;
     }
@@ -90,5 +141,18 @@ public class Client extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Client());
+    }
+    
+     public void close() {
+        try {
+            if(notificationReader != null){
+                notificationReader.close();
+            }
+            if(notificationSocket != null) {
+                notificationSocket.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error closing connection: " + e.getMessage());
+        }
     }
 }

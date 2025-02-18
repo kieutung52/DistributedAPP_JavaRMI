@@ -10,7 +10,7 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService 
     private Connection connection;
 
     public UserServiceImpl() throws RemoteException, SQLException {
-        String url = "jdbc:mysql://mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com:18485/PKA_libraryRMI?useSSL=false";
+        String url = "jdbc:mysql://mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com:18485/PKA_libraryRMI?useSSL=false&allowPublicKeyRetrieval=true&requireSSL=true";
         String user = "avnadmin";
         String password = "AVNS_NZCUzPfcnm3RVyLqLtB";
         connection = DriverManager.getConnection(url, user, password);

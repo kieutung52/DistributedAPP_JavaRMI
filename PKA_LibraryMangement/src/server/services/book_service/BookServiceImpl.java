@@ -9,16 +9,19 @@ import java.util.List;
 import model.Book;
 import model.Loan;
 import model.User;
+import server.services.NotificationService;
 
 public class BookServiceImpl extends UnicastRemoteObject implements BookService {
     private Connection connection;
+    private NotificationService notificationService;
 
-    public BookServiceImpl() throws RemoteException, SQLException {
-        String url = "jdbc:mysql://mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com:18485/PKA_libraryRMI?useSSL=false";
+    public BookServiceImpl(NotificationService notificationService) throws RemoteException, SQLException {
+        String url = "jdbc:mysql://mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com:18485/PKA_libraryRMI?useSSL=false&allowPublicKeyRetrieval=true&requireSSL=true";
         String user = "avnadmin";
         String password = "AVNS_NZCUzPfcnm3RVyLqLtB";
         connection = DriverManager.getConnection(url, user, password);
         connection.setAutoCommit(false);
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -249,7 +252,14 @@ public class BookServiceImpl extends UnicastRemoteObject implements BookService 
             statement = connection.prepareStatement(sql);
             statement.setInt(1, loanId);
             statement.executeUpdate();
+            connection.commit(); 
+            notificationService.broadcastMessage("update"); 
         } catch (SQLException e) {
+            try {
+                connection.rollback(); 
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
             throw new RemoteException("Lỗi duyệt yêu cầu mượn: " + e.getMessage());
         }
@@ -272,7 +282,7 @@ public class BookServiceImpl extends UnicastRemoteObject implements BookService 
 
             connection.commit();
             System.out.println("Trả sách thành công (Loan ID: " + loan.getId() + ")");
-
+            notificationService.broadcastMessage("update");
         } catch (SQLException e) {
             try {
                 connection.rollback();
@@ -291,7 +301,14 @@ public class BookServiceImpl extends UnicastRemoteObject implements BookService 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, loanId);
             statement.executeUpdate();
+            connection.commit();
+            notificationService.broadcastMessage("update");
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
             throw new RemoteException("Lỗi từ chối yêu cầu mượn: " + e.getMessage());
         }
@@ -328,9 +345,23 @@ public class BookServiceImpl extends UnicastRemoteObject implements BookService 
             statement = connection.prepareStatement(sql);
             statement.setString(1, book.getIsbn());
             statement.executeUpdate();
+            notificationService.broadcastMessage("update");
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RemoteException("Lỗi trả sách: " + e.getMessage());
+        }
+    }
+
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(notificationService != null) {
+            notificationService.close();
         }
     }
 }

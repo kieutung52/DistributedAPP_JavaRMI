@@ -3,49 +3,5 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
-    ],
-    "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "KieuTungMSQL",
-            "database": "baithuchanh1",
-            "username": "root",
-            "password": "05022004"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com",
-            "port": 18485,
-            "driver": "MySQL",
-            "name": "JavaRMI_Book",
-            "database": "libraryRMI_Book",
-            "username": "avnadmin",
-            "password": "AVNS_NZCUzPfcnm3RVyLqLtB"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "mysql-c1071a-kieuthanhtung0502-6dee.c.aivencloud.com",
-            "port": 18485,
-            "driver": "MySQL",
-            "name": "PKA_library",
-            "database": "PKA_libraryRMI",
-            "username": "avnadmin",
-            "password": "AVNS_NZCUzPfcnm3RVyLqLtB"
-        }
     ]
 }

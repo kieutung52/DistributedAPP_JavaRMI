@@ -15,6 +15,7 @@ import java.util.List;
 
 public class AdminPanel extends JPanel {
     private Client client;
+    @SuppressWarnings("unused")
     private User currentUser;
     private BookService bookService;
     private DefaultTableModel bookTableModel;
@@ -279,7 +280,7 @@ public class AdminPanel extends JPanel {
         }
     }
 
-    private void viewAllBooks() {
+    public void viewAllBooks() {
         try {
             List<Book> books = bookService.viewAllBooks();
             updateBookTable(books);
@@ -296,7 +297,7 @@ public class AdminPanel extends JPanel {
         }
     }
 
-    private void viewAllRequests() {
+    public void viewAllRequests() {
         try {
             List<Loan> loans = bookService.getBorrowRequests();
             updateLoanTable(loans);

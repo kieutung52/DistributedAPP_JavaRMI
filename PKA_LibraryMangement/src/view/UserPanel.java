@@ -14,6 +14,7 @@ import java.util.List;
 
 public class UserPanel extends JPanel {
     private Client client;
+    @SuppressWarnings("unused")
     private User currentUser;
     private BookService bookService;
     private DefaultTableModel tableModel;
@@ -122,22 +123,7 @@ public class UserPanel extends JPanel {
         }
     }
 
-    private void returnBook(Book book) {
-        User currentUser = client.getCurrentUser();
-        if (currentUser != null) {
-            try {
-                bookService.returnBook(book, currentUser);
-                JOptionPane.showMessageDialog(this, "Trả sách thành công.");
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi trả sách: " + ex.getMessage());
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Bạn cần đăng nhập để trả sách.");
-        }
-    }
-
-    private void viewAllBooks() {
+    public void viewAllBooks() {
         try {
             List<Book> books = bookService.viewAllBooks();
             updateBookTable(books);
@@ -191,7 +177,7 @@ public class UserPanel extends JPanel {
         }
     }
 
-    private void updateBorrowRequests() {
+    public void updateBorrowRequests() {
         User currentUser = client.getCurrentUser();
         if (currentUser != null) {
             try {

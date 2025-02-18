@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Authentication extends JPanel {
+    @SuppressWarnings("unused")
     private Client client;
     private UserService userService;
     private JTextField usernameField;
